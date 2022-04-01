@@ -249,3 +249,9 @@ Then, run the test suite with:
 ```bash
 $ pytest
 ```
+
+There is also bash script that can run arbitrary Airflow image with OpenLineage integration build from current branch.
+Run it as
+```bash
+AIRFLOW_IMAGE=<airflow_image_with_tag> ./scripts/run_airflow.sh
+```
