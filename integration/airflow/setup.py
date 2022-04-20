@@ -31,7 +31,7 @@ extras_require = {
         "snowflake-connector-python"
     ],
     "airflow-1": [
-        "apache-airflow[gcp_api,google,postgres]==1.10.15",
+        "apache-airflow[gcp_api,google,postgres,mysql]==1.10.15",
         "airflow-provider-great-expectations==0.0.8",
     ],
     "airflow-2": [
