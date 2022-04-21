@@ -1,108 +1,26 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-setup: true
-
-# the continuation orb is required to continue a pipeline based on
-# the path of an updated fileset
-orbs:
-  continuation: circleci/continuation@0.2.0
-
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  # Determine the modules that have changed and trigger a series of workflow tasks as necessary.
-  # We merge multiple workflows from files in the workflows subdirectory based on the changed
-  # modules. A single module changed may require tests and builds in multiple downstream modules.
-  # For example, a change to the python client requires building the airflow, common, and dagster
-  # modules. Changing the spec requires building everything.
-  # Note that we don't use the path-filtering orb because we require this dynamic combination of
-  # workflows. The path-filtering orb will let us set some boolean parameters (e.g., airflow: true),
-  # but we can't stitch together multiple workflows and create cross-workflow dependencies. E.g.,
-  # it's possible to create a workflow for the python client and one for the airflow library, but we
-  # can't create an airflow workflow and a python client workflow and have the airflow workflow
-  # depend on the python client workflow if both boolean parameters happen to be true. We could
-  # simply make each workflow include its dependencies, but then we'll end up with duplicate steps
-  # (e.g., if the python client changes it triggers the airflow, common, and dagster modules;
-  # including dependencies means that each module would run the python client tests).
-  #
-  # The workflow files in the subdirectory are yaml files that adhere to the schema of the worfklows
-  # section of a circleci config.yml file. See the spec here: https://circleci.com/docs/2.0/configuration-reference/#workflows
-  # In addition, each workflow should include a job called "workflow_complete". This workflow_complete
-  # is defined as a no-op job in the continue_config.yml file. The job should have dependencies on
-  # each required terminal step in the workflow. E.g., the Java workflow requires the Spark
-  # integration test step which is the last required step in the workflow. All of the
-  # workflow_complete jobs will be merged together so the final workflow will hava a single
-  # workflow_complete job that depends on all of the required terminal steps in each executed
-  # workflow
-  determine_changed_modules:
+  say-hello:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: cimg/go:1.17.8
+      - image: cimg/base:stable
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
       - run:
-          name: Install yq
-          command: go install "github.com/mikefarah/yq/v4@latest"
-      - run: |
-          # Based on the changed files (or if we are on the main branch), generate a yaml file with
-          # a list of workflow files. Use those files to build a workflow with a union of all tasks
+          name: "Say hello"
+          command: "echo Hello, World!"
 
-          function check_change () {
-            MOD=$1
-            shift
-            if [ $(git diff --name-only main $MOD | wc -l) -gt 0 ]; then
-              echo "Change found in $MOD"
-              if [ "$1" == "*" ]; then
-                ls -d $PWD/.circleci/workflows/* > workflow_files.txt
-              else
-                for ln in $@; do
-                  echo "$PWD/.circleci/workflows/$ln" >> workflow_files.txt
-                done
-              fi
-            fi
-          }
-
-          # If we are on the main branch, run all of the workflows
-          if [ "$CIRCLE_BRANCH" == "main" ]; then
-            ls -d $PWD/.circleci/workflows/* > workflow_files.txt
-          else
-            # Changes to the spec require all workflows to run
-            check_change spec "*"
-
-            check_change client/java/ openlineage-java.yml
-            check_change integration/spark/ openlineage-java.yml
-            check_change client/python/ openlineage-integration-python.yml openlineage-integration-dbt.yml openlineage-integration-dagster.yml openlineage-integration-airflow.yml
-            check_change integration/common/ openlineage-integration-python.yml openlineage-integration-airflow.yml openlineage-integration-dbt.yml
-            check_change integration/airflow/ openlineage-integration-python.yml openlineage-integration-airflow.yml
-            check_change integration/dagster/ openlineage-integration-python.yml openlineage-integration-dagster.yml
-            check_change integration/dbt/ openlineage-integration-python.yml openlineage-integration-dbt.yml
-            check_change proxy openlineage-proxy.yml
-          fi
-          touch workflow_files.txt
-          FILES=$(sort workflow_files.txt | uniq | tr "\n" " ")
-            
-          # If no changes, generate a no-op build
-          if [ "$FILES" == "" ]; then
-            echo '{"workflows": {"no-op": {"jobs": ["workflow_complete"]}}}' | yq -P eval-all '. as $wf ireduce({}; . * $wf)' .circleci/continue_config.yml - > complete_config.yml
-          else
-            # yq eval-all the workflow files specified in the workflow_files.txt file.
-            # Collect all the jobs from each workflow except for the "workflow_complete" job and
-            # create a union of all jobs.
-            # Collect the "workflow_complete" job from each workflow and concatenate the "requires"
-            # section of each and create a single "workflow_complete" job that is the union of all.
-            # The output of this is a circleci configuration with a single workflow called "build"
-            # that contains the union of all jobs plus the "workflow_complete" job that depends on
-            # all required jobs.
-            #
-            # This configuration is piped into yq along with the continue_config.yml file and the
-            # union of the two files is output to complete_config.yml
-
-            yq eval-all '.workflows | . as $wf ireduce({}; . * $wf) |
-                (map(.jobs[] | select(has("workflow_complete") | not)) | . as $item ireduce ([]; (. *+ $item) ))
-                + [(map(.jobs[] | select(has("workflow_complete"))) | .[] as $item ireduce ({}; . *+ $item))] | {"workflows": {"build": {"jobs": .}}}' $FILES | \
-            yq eval-all '. as $wf ireduce({}; . * $wf)' .circleci/continue_config.yml - > complete_config.yml
-          fi
-      - continuation/continue:
-          configuration_path: complete_config.yml
-
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  schedule_workflow:
+  say-hello-workflow:
     jobs:
-      - determine_changed_modules
+      - say-hello
