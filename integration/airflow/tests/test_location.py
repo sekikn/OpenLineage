@@ -16,8 +16,8 @@ log = logging.getLogger(__name__)
        side_effect=execute_git_mock)
 def test_dag_location(git_mock):
     assert re.match(r'https://github.com/[^/]+/OpenLineage/blob/'
-        'abcd1234/integration/airflow/tests/test_dags/test_dag.py',
-        get_location("tests/test_dags/test_dag.py"))
+                    'abcd1234/integration/airflow/tests/test_dags/test_dag.py',
+                    get_location("tests/test_dags/test_dag.py"))
 
 
 @patch('openlineage.airflow.utils.execute_git',
