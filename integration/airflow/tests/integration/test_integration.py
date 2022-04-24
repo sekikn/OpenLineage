@@ -186,4 +186,5 @@ def test_integration_ordered(dag_id, request_dir: str):
 if __name__ == '__main__':
     setup_db()
     test_integration('postgres_orders_popular_day_of_week', 'requests/postgres.json')
+    test_integration('mysql_orders_popular_day_of_week', 'requests/mysql.json')
     test_integration('great_expectations_validation', 'requests/great_expectations.json')

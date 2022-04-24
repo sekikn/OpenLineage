@@ -125,3 +125,16 @@ services:
       timeout: 30s
       retries: 50
     restart: always
+
+  mysql:
+    image: mysql:8
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_USER=food_delivery
+      - MYSQL_PASSWORD=food_delivery
+      - MYSQL_DATABASE=food_delivery
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_ONETIME_PASSWORD=
+    volumes:
+      - ../docker/init-db-mysql.sh:/docker-entrypoint-initdb.d/init-db-mysql.sh
