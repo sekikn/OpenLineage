@@ -46,6 +46,24 @@ Identifier:
  * Unique name: {database}.{table}
    * URI =  mysql://{host}:{port}/{database}.{table}
 
+#### JDBC:
+Datasource hierarchy:
+ * Driver
+ * Host
+ * Port
+
+Naming hierarchy:
+ * Database
+ * Schema
+ * Table
+
+Identifier:
+ * Namespace: jdbc:{driver}://{host}:{port} of the service instance.
+   * Scheme = jdbc:{driver}
+   * Authority = {host}:{port}
+ * Unique name: {database}.{schema}.{table}
+   * URI = jdbc:{driver}://{host}:{port}/{database}.{schema}.{table}
+
 #### Redshift:
 Datasource hierarchy:
  * Host: examplecluster.\<XXXXXXXXXXXX>.us-west-2.redshift.amazonaws.com

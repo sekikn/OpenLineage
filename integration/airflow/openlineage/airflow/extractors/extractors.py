@@ -18,6 +18,9 @@ _extractors = list(
                 'openlineage.airflow.extractors.mysql_extractor.MySqlExtractor'
             ),
             try_import_from_string(
+                'openlineage.airflow.extractors.jdbc_extractor.JdbcExtractor'
+            ),
+            try_import_from_string(
                 'openlineage.airflow.extractors.bigquery_extractor.BigQueryExtractor'
             ),
             try_import_from_string(
