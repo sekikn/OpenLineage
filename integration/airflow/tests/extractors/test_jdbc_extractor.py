@@ -27,7 +27,7 @@ JdbcHook = safe_import_airflow(
     airflow_2_path="airflow.providers.jdbc.hooks.jdbc.JdbcHook"
 )
 
-CONN_ID = 'jdbc_conn'
+CONN_ID = 'food_delivery_db'
 DB_NAME = 'food_delivery'
 
 CONN_URI = f'jdbc:postgres://user:pass@localhost:5432/{DB_NAME}'
@@ -111,7 +111,6 @@ def test_extract(get_connection, mock_get_table_schemas):
         conn_type='jdbc',
         host='jdbc:postgres://localhost:5432/food_delivery',
     )
-
     get_connection.return_value = conn
 
     expected_inputs = [
@@ -135,45 +134,8 @@ def test_extract(get_connection, mock_get_table_schemas):
     assert task_metadata.outputs == []
 
 
-@mock.patch('openlineage.airflow.extractors.jdbc_extractor.JdbcExtractor._get_table_schemas')  # noqa
-@mock.patch('openlineage.airflow.extractors.jdbc_extractor.get_connection')
-def test_extract_authority_uri(get_connection, mock_get_table_schemas):
-
-    mock_get_table_schemas.side_effect = \
-        [[DB_TABLE_SCHEMA], NO_DB_TABLE_SCHEMA]
-
-    conn = Connection()
-    conn.parse_from_uri(uri=CONN_URI)
-    get_connection.return_value = conn
-
-    expected_inputs = [
-        Dataset(
-            name=f"{DB_NAME}.{DB_SCHEMA_NAME}.{DB_TABLE_NAME.name}",
-            source=Source(
-                scheme='jdbc:postgres',
-                authority='localhost:5432',
-                connection_url=CONN_URI_WITHOUT_USERPASS
-            ),
-            fields=[]
-        ).to_openlineage_dataset()]
-
-    task_metadata = JdbcExtractor(TASK).extract()
-
-    assert task_metadata.name == f"{DAG_ID}.{TASK_ID}"
-    assert task_metadata.inputs == expected_inputs
-    assert task_metadata.outputs == []
-
-
-@mock.patch('jaydebeapi.connect')
-def test_get_table_schemas(mock_conn):
-    # (1) Define a simple hook class for testing
-    class TestJdbcHook(JdbcHook):
-        conn_name_attr = 'test_conn_id'
-
-        def __init__(self, *args, **kwargs):
-            super(TestJdbcHook, self).__init__(*args, **kwargs)
-            self.schema = ''
-
+@mock.patch('openlineage.airflow.extractors.jdbc_extractor.JdbcExtractor._get_hook')
+def test_get_table_schemas(mock_hook):
     # (2) Mock calls to jdbc
     rows = [
         (DB_SCHEMA_NAME, DB_TABLE_NAME.name, 'id', 1, 'int4'),
@@ -183,13 +145,11 @@ def test_get_table_schemas(mock_conn):
         (DB_SCHEMA_NAME, DB_TABLE_NAME.name, 'ends_on', 5, 'timestamp')
     ]
 
-    mock_conn.return_value \
+    # (3) Mock conn for hook
+    mock_hook.return_value \
+        .get_conn.return_value \
         .cursor.return_value \
         .fetchall.return_value = rows
-
-    # (3) Mock conn for hook
-    hook = TestJdbcHook()
-    hook.conn = mock_conn
 
     # (4) Extract table schemas for task
     extractor = JdbcExtractor(TASK)

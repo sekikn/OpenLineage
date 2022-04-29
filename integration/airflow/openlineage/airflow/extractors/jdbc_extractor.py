@@ -20,7 +20,7 @@ from openlineage.common.models import (
 from openlineage.common.sql import SqlMeta, parse, DbTableMeta
 from openlineage.common.dataset import Source, Dataset
 
-# We use the commonly available columns in all of the following databases:
+# We use the commonly available columns on all of the following databases:
 # BigQuery: https://cloud.google.com/bigquery/docs/information-schema-tables#columns_view
 # MySQL: https://dev.mysql.com/doc/refman/8.0/en/information-schema-columns-table.html
 # PostgreSQL: https://www.postgresql.org/docs/current/infoschema-columns.html
