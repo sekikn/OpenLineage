@@ -31,8 +31,6 @@ _COLUMN_NAME = 2
 _ORDINAL_POSITION = 3
 _DATA_TYPE = 4
 
-JDBC_PREFIX = "jdbc:"
-
 logger = logging.getLogger(__name__)
 
 
@@ -57,8 +55,8 @@ class JdbcExtractor(BaseExtractor):
         # (3) Default all inputs / outputs to current connection.
         # NOTE: We'll want to look into adding support for the `database`
         # property that is used to override the one defined in the connection.
-        # NOTE: Strangely, Airflow's JdbcHook takes whole JDBC URI via the "host" field
-        # as mentioned in https://lists.apache.org/thread/cdqdsdy9sg0rbw3l0tr5hsk64kjygzo5.
+        # NOTE: Airflow's JdbcHook takes whole JDBC URI via the "host" field.
+        # https://airflow.apache.org/docs/apache-airflow-providers-jdbc/stable/_api/airflow/providers/jdbc/hooks/jdbc/index.html#airflow.providers.jdbc.hooks.jdbc.JdbcHook
         # So we have to parse that field manually to get the following information.
         uri = self.conn.host
         pos = uri.find("://")
