@@ -69,5 +69,5 @@ export DBT_DATASET_PREFIX=$(echo "$AIRFLOW_VERSION" | tr "-" "_" | tr "." "_")_d
 
 docker-compose -f tests/docker-compose-2.yml down
 docker-compose -f tests/docker-compose-2.yml up --build --abort-on-container-exit airflow_init postgres
-docker-compose -f tests/docker-compose-2.yml up --build --abort-on-container-exit airflow_add_connection
+docker-compose -f tests/docker-compose-2.yml up --build --abort-on-container-exit airflow_add_connection postgres
 docker-compose -f tests/docker-compose-2.yml up --build --exit-code-from integration --scale airflow_init=0 --scale airflow_add_connection=0

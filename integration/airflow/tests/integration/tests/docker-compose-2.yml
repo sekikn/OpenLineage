@@ -99,7 +99,7 @@ services:
 
   airflow_add_connection:
     <<: *airflow-base
-    command: ['connections', 'add', '--conn-extra', '{"extra__jdbc__drv_clsname" : "org.postgresql.Driver", "extra__jdbc__drv_path" : "/usr/share/java/postgresql.jar"}',  '--conn-host', 'jdbc:postgresql://postgres:5432/food_delivery', '--conn-login', 'food_delivery', '--conn-password', 'food_delivery', '--conn-type', 'jdbc', 'jdbc_default']
+    command: ['connections', 'add', '--conn-extra', '{"extra__jdbc__drv_clsname": "org.postgresql.Driver", "extra__jdbc__drv_path": "/usr/share/java/postgresql.jar"}', '--conn-host', 'jdbc:postgresql://postgres:5432/food_delivery', '--conn-login', 'food_delivery', '--conn-password', 'food_delivery', '--conn-type', 'jdbc', 'jdbc_conn']
 
   redis:
     image: redis:latest

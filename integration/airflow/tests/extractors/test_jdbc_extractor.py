@@ -30,8 +30,8 @@ JdbcHook = safe_import_airflow(
 CONN_ID = 'food_delivery_db'
 DB_NAME = 'food_delivery'
 
-CONN_URI = f'jdbc:postgres://user:pass@localhost:5432/{DB_NAME}'
-CONN_URI_WITHOUT_USERPASS = f'jdbc:postgres://localhost:5432/{DB_NAME}'
+CONN_URI = f'jdbc:postgresql://user:pass@localhost:5432/{DB_NAME}'
+CONN_URI_WITHOUT_USERPASS = f'jdbc:postgresql://localhost:5432/{DB_NAME}'
 
 DB_SCHEMA_NAME = 'public'
 DB_TABLE_NAME = DbTableMeta('discounts')
@@ -109,7 +109,7 @@ def test_extract(get_connection, mock_get_table_schemas):
     conn = Connection(
         conn_id=CONN_ID,
         conn_type='jdbc',
-        host='jdbc:postgres://localhost:5432/food_delivery',
+        host='jdbc:postgresql://localhost:5432/food_delivery',
     )
     get_connection.return_value = conn
 
@@ -117,7 +117,7 @@ def test_extract(get_connection, mock_get_table_schemas):
         Dataset(
             name=f"{DB_NAME}.{DB_SCHEMA_NAME}.{DB_TABLE_NAME.name}",
             source=Source(
-                scheme='jdbc:postgres',
+                scheme='jdbc:postgresql',
                 authority='localhost:5432',
                 connection_url=CONN_URI_WITHOUT_USERPASS
             ),
