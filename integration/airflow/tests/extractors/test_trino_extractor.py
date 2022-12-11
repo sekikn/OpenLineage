@@ -87,12 +87,12 @@ DAG = dag = DAG(
 TASK_ID = 'select'
 
 
-@pytest.mark.skip(
+@pytest.mark.skipif(
     TrinoOperator is None,
     reason="TrinoOperator is available only with apache-airflow-providers-trino 3.1.0+"
 )
 @mock.patch('openlineage.airflow.extractors.sql_extractor.get_table_schemas')  # noqa
-@mock.patch('openlineage.airflow.extractors.sql_extractor.get_connection')
+@mock.patch('airflow.hooks.base.BaseHook.get_connection')
 def test_extract(get_connection, mock_get_table_schemas):
     source = Source(
         scheme='trino',
