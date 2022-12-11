@@ -14,6 +14,7 @@ class TrinoExtractor(SqlExtractor):
         "column_name",
         "ordinal_position",
         "data_type",
+        "table_catalog",
     ]
     _is_information_schema_cross_db = True
     _allow_trailing_semicolon = False
