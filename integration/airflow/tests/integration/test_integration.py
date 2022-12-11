@@ -94,13 +94,8 @@ params = [
     pytest.param(
         "trino_orders_popular_day_of_week",
         "requests/trino.json",
-        # TrinoOperator is available since Trino provider 3.1.0
-        # (https://airflow.apache.org/docs/apache-airflow-providers-trino/3.1.0/operators/trino.html),
-        # but until Airflow 2.3.3 on Python 3.7, Trino provider 3.0.0 or lower is installed by default
-        # (e.g., https://raw.githubusercontent.com/apache/airflow/constraints-2.3.3/constraints-3.7.txt).
-        # So we'll run this integration test against Airflow 2.3.4+ here.
         marks=pytest.mark.skipif(
-            not IS_AIRFLOW_VERSION_ENOUGH("2.3.4"), reason="Airflow < 2.3.4"
+            not IS_AIRFLOW_VERSION_ENOUGH("2.4.0"), reason="Airflow < 2.4.0"
         ),
     ),
     pytest.param(
