@@ -4,7 +4,7 @@
 import logging
 from typing import Optional, List
 from openlineage.airflow.extractors.base import BaseExtractor, TaskMetadata
-from openlineage.client.run import Dataset
+from openlineage.common.dataset import Dataset, Source
 
 log = logging.getLogger(__name__)
 
@@ -17,28 +17,25 @@ class S3CopyObjectExtractor(BaseExtractor):
     def extract(self) -> Optional[TaskMetadata]:
 
         input_object = Dataset(
-            namespace="s3://{}".format(self.operator.source_bucket_name),
-            name="s3://{0}/{1}".format(
-                self.operator.source_bucket_name,
-                self.operator.source_bucket_key
-            ),
-            facets={}
+            name=self.operator.source_bucket_key,
+            source=Source(
+                scheme="s3",
+                authority=self.operator.source_bucket_name,
+                connection_url=f"s3://{self.operator.source_bucket_name}/{self.operator.source_bucket_key}"
+            )
         )
 
         output_object = Dataset(
-            namespace="s3://{}".format(self.operator.dest_bucket_name),
-            name="s3://{0}/{1}".format(
-                self.operator.dest_bucket_name,
-                self.operator.dest_bucket_key
-            ),
-            facets={}
+            name=self.operator.dest_bucket_key,
+            source=Source(
+                scheme="s3",
+                authority=self.operator.dest_bucket_name,
+                connection_url=f"s3://{self.operator.dest_bucket_name}/{self.operator.dest_bucket_key}"
+            )
         )
 
         return TaskMetadata(
             name=f"{self.operator.dag_id}.{self.operator.task_id}",
-            inputs=[input_object],
-            outputs=[output_object],
+            inputs=[input_object.to_openlineage_dataset()],
+            outputs=[output_object.to_openlineage_dataset()],
         )
-
-    def extract_on_complete(self, task_instance) -> Optional[TaskMetadata]:
-        pass

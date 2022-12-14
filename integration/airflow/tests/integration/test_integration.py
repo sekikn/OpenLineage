@@ -134,6 +134,7 @@ params = [
         ),
     ),
     ("sftp_dag", "requests/sftp.json"),
+    ("s3copy_dag", "requests/s3copy.json"),
 ]
 
 
