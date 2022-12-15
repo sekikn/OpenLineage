@@ -1,0 +1,22 @@
+[{
+    "eventType": "START",
+    "inputs": [
+        {
+            "name": "{{ (env_var('AWS_S3_TRANSFORM_INPUT_LOCATION')) | url_path }}",
+            "namespace": "{{ env_var('AWS_S3_TRANSFORM_INPUT_LOCATION') | url_scheme_authority }}"
+        }
+    ],
+    "job": {
+        "facets": {},
+        "name": "s3transform_dag.s3transform_task"
+    },
+    "outputs": [
+        {
+            "name": "{{ (env_var('AWS_S3_TRANSFORM_OUTPUT_LOCATION')) | url_path }}",
+            "namespace": "{{ env_var('AWS_S3_TRANSFORM_OUTPUT_LOCATION') | url_scheme_authority }}"
+        }
+    ],
+    "run": {
+        "facets": {}
+    }
+}]

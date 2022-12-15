@@ -141,6 +141,28 @@ params = [
             not IS_AIRFLOW_VERSION_ENOUGH("2.3.0"), reason="Airflow < 2.3.0"
         ),
     ),
+    pytest.param(
+        "s3transform_dag",
+        "requests/s3transform.json",
+        marks=[
+            pytest.mark.skipif(
+                os.environ.get("AWS_ACCESS_KEY_ID", "") == "",
+                reason="no AWS credentials",
+            ),
+            pytest.mark.skipif(
+                os.environ.get("AWS_SECRET_ACCESS_KEY", "") == "",
+                reason="no AWS credentials",
+            ),
+            pytest.mark.skipif(
+                os.environ.get("AWS_S3_TRANSFORM_INPUT_LOCATION", "") == "",
+                reason="no s3 transform input location",
+            ),
+            pytest.mark.skipif(
+                os.environ.get("AWS_S3_TRANSFORM_OUTPUT_LOCATION", "") == "",
+                reason="no s3 transform output location",
+            ),
+        ],
+    ),
 ]
 
 
