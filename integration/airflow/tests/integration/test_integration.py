@@ -141,6 +141,13 @@ params = [
             not IS_AIRFLOW_VERSION_ENOUGH("2.3.0"), reason="Airflow < 2.3.0"
         ),
     ),
+    pytest.param(
+        "s3transform_dag",
+        "requests/s3transform.json",
+        marks=pytest.mark.skipif(
+            not IS_AIRFLOW_VERSION_ENOUGH("2.3.0"), reason="Airflow < 2.3.0"
+        ),
+    ),
 ]
 
 
